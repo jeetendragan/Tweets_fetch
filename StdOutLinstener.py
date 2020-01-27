@@ -8,15 +8,20 @@ import os
 
 class StdOutLinstener(StreamListener):
 
-    def __init__(self, path, credentials_id, query):
-        now = str(datetime.datetime.now())
-        self.path = "/data/jeetendragan/" + now + "--" + credentials_id + "/"
-        self.query = query
-        os.mkdir(self.path)
-        timestamp_file = open(self.path + "start_time.txt", "w")
+    def __init__(self, path, query):
+        """timestamp_file = open(self.path + "start_time.txt", "w")
         timestamp_file.write(now)
-        timestamp_file.close()
+        timestamp_file.close()"""
+        self.path = path
+        
+        # file to store all the correctly fetched tweets
         self.out_file = self.path + "output_"+','.join(query["track"])+".txt"
+
+        # file to store failed tweets - i.e. those that do not have the text component
+        self.out_file_fail = self.path + "fails.txt"
+
+        # file to store streaming failures - errors
+        self.out_file_error = self.path + "errors.txt"
     
     def on_data(self, data):
         data_json = json.loads(data)
@@ -29,13 +34,13 @@ class StdOutLinstener(StreamListener):
             f.close()
         else:
             print('Failed')
-            f = open(self.out_file, 'a')
+            f = open(self.out_file_fail, 'a')
             f.write(json.dumps(data_json)+"\n")
             f.close()
         return True        
     
     def on_error(self, status):
-        f = open(self.path+ "error.txt", "w")
+        f = open(self.out_file_error, "w")
         f.write(str(status))
         f.close
         return True
@@ -63,7 +68,7 @@ if __name__ == '__main__':
         print("\nERROR: The query.json file should have an array of query objects. Make sure that the format is correct\n")
 
     credentials = all_credentials[0] # get the first set of credentials
-    listener = StdOutLinstener("/data/jeetendragan/", credentials['id'], all_queries["1"])
+    listener = StdOutLinstener("/data/jeetendragan/", all_queries["1"])
 
     auth = OAuthHandler(credentials['CONSUMER_KEY'], credentials['CONSUMER_SECRET'])
     auth.set_access_token(credentials['ACCESS_TOKEN'], credentials['ACCESS_TOKEN_SECRET'])
