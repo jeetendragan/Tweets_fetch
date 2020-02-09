@@ -51,7 +51,7 @@ class StdOutListener(StreamListener):
         return True
 
 if __name__ == '__main__':
-
+    
 
     try:
         cred_file = open("credentials.json")

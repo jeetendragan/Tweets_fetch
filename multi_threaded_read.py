@@ -7,6 +7,7 @@ from tweepy import OAuthHandler
 from tweepy import Stream
 import time
 import sys
+import time
 
 def fetch_tweets(credentials, query, data_dir):
     auth = OAuthHandler(credentials['CONSUMER_KEY'], credentials['CONSUMER_SECRET'])
@@ -31,6 +32,8 @@ def fetch_tweets(credentials, query, data_dir):
             log_file = open(path+"LogFile.txt", "a")
             log_file.write(str(e))
             log_file.close()
+            print("Restarting in 3 minutes")
+            time.sleep(180)
 
 if __name__ == '__main__':
     if len(sys.argv) != 4:
